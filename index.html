@@ -1,0 +1,156 @@
+<!--
+  Copyright (c) 2017-present, Facebook, Inc.
+  All rights reserved.
+
+  This source code is licensed under the license found in the
+  LICENSE file in the root directory of this source tree.
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="full-screen" content="yes" />
+  <meta name="screen-orientation" content="portrait" />
+  <meta name="viewport" content="user-scalable=no" />
+  <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!-- build:js -->
+  <script src="https://www.facebook.com/assets.php/en_US/fbinstant.latest.js"></script>
+  <style>
+    .center {
+      margin: auto;
+      width: 90%;
+      border: 3px solid #73AD21;
+      padding: 10px;
+    }
+
+    p {
+      font-size: 50px;
+    }
+  </style>
+  <!-- endbuild -->
+  <script type="text/javascript">
+
+    $(document).ready(function () {
+      $("#btn-share").click(function () {
+        var c = document.getElementById("myCanvas");
+        var img = c.toDataURL();
+        FBInstant.shareAsync({
+          intent: 'INVITE',
+          image: img, // base64Image code must be passed in img
+          text: 'Play this Awesome game',
+          data: { myReplayData: '...' },
+        }).then(function () {
+          
+        });
+      });
+    });
+
+    const assets = [
+      'img/asset1.png',
+      'img/asset2.png',
+      'img/asset3.png',
+      'img/asset4.png'
+    ];
+
+    window.onload = function () {
+      $('#info-section').hide();
+
+      // When the window loads, start to initialize the SDK
+      FBInstant.initializeAsync().then(function () {
+
+        // We can start to load assets
+        for (let i in assets) {
+          // When preloading assets, make sure to report the progress
+          FBInstant.setLoadingProgress(i / assets.length * 100);
+        }
+
+        // Now that assets are loaded, call startGameAsync
+        FBInstant.startGameAsync().then(onStart);
+      });
+
+     
+
+    };
+
+    function onStart() {
+      // This is called when the user has tapped Play
+      // Information from the SDK can now be accessed
+
+      var windowWidth = window.innerWidth;
+      var windowHeight = window.innerHeight;
+
+
+      $('#p_content').attr('width', windowWidth - 20);
+      $('#p_content').attr('width', windowWidth - 70);
+
+      $('#myCanvas').attr('width', windowWidth - 70);
+      $('#myCanvas').attr('height', windowWidth - 100);
+
+      // $('#photo').attr('src', FBInstant.player.getPhoto());
+      // $('#player-name').html(FBInstant.player.getName() + ' ඔබට');
+      // $('#player-id').html(FBInstant.player.getID());
+      // $('#context-type').html(FBInstant.context.getType());
+
+      var min = 0;
+      var max = 30;
+      var num = Math.floor(Math.random() * (max - min + 1)) + min;
+
+      if(num>22){
+        num = 0;
+      }
+
+      // $('#p_content').attr('src', 'asserts/' + num + '.jpeg');
+
+
+      var canvas = document.getElementById("myCanvas");
+      var context = canvas.getContext("2d");
+      var imageObj = new Image();
+
+      imageObj.onload = function () {
+        context.drawImage(imageObj, 0, 0, canvas.width, canvas.height);
+        context.font = "20pt Calibri";
+        context.fillText(FBInstant.player.getName(), 90, 45);
+      };
+      imageObj.src = 'asserts/' + num + '.jpg' ;
+
+      // $("#btn-share").button().click(function () {
+      //   FBInstant.shareAsync();
+      // });
+
+      try {
+        $('#entrypointdata').html(JSON.stringify(FBInstant.getEntryPointData()));
+      } catch (e) {
+        console.log(e);
+      }
+      $('#info-section').show();
+    }
+  </script>
+
+  <header>
+    <h1>   </h1>
+  </header>
+  <section id="info-section">
+    <h1 style="color:DodgerBlue;" id="player-name"> </h1>
+    <!-- <table>
+      <tr>
+        <td>
+          <img id="photo" class="profile_picture" />
+        </td>
+        <td id="player-name"></td>
+      </tr>
+    </table> -->
+    <!-- <img id="p_content" class="center" /> -->
+    <canvas id="myCanvas">
+    </canvas>
+    <input type="button" id="btn-share" value="Share" />
+  </section>
+</body>
+
+</html>
